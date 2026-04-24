@@ -25,3 +25,8 @@ logs/
 # Environment
 .env
 .env.local
+
+# Workshop docs
+advanced-database-optimization-facilitator-guide.md
+advanced-database-optimization-speaker-notes.md
+database-performance-lecture.md
