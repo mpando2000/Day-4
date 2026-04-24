@@ -9,7 +9,7 @@ target/
 .vscode/
 *.code-workspace
 .codex
-.CLAUDE.md
+CLAUDE.md
 
 # OS
 .DS_Store
