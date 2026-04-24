@@ -54,19 +54,31 @@ spring-gateway-lab/
         └── resources/application.yml
 ```
 
-## 1) Start Redis
+## Option A) Run Everything with Docker (recommended)
+
+Builds all four service images and starts Redis in one command:
 
 ```bash
-docker compose up -d redis
+docker-compose up --build
 ```
 
-## 2) Build Everything
+First run takes ~2 minutes while Maven downloads dependencies inside the containers. Subsequent runs are faster unless `--build` is passed.
+
+## Option B) Run Locally (4 terminals)
+
+### 1) Start Redis
+
+```bash
+docker-compose up -d redis
+```
+
+### 2) Build Everything
 
 ```bash
 mvn clean package
 ```
 
-## 3) Run the Services (4 terminals)
+### 3) Run the Services (4 terminals)
 
 Terminal 1:
 ```bash
@@ -108,6 +120,18 @@ curl -s http://localhost:8080/api/members/MBR-101 \
   -H "Authorization: Bearer $TOKEN" | jq
 
 curl -s http://localhost:8080/api/cards/CRD-501 \
+  -H "Authorization: Bearer $TOKEN" | jq
+```
+
+Additional claim endpoints:
+
+```bash
+# Claims filtered by member ID
+curl -s http://localhost:8080/api/claims/by-member/42 \
+  -H "Authorization: Bearer $TOKEN" | jq
+
+# Paid claims — returns item-level rows (demonstrates join multiplication)
+curl -s http://localhost:8080/api/claims/paid \
   -H "Authorization: Bearer $TOKEN" | jq
 ```
 

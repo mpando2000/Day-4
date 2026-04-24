@@ -27,7 +27,7 @@ public class ClaimController {
     }
 
     @GetMapping("/{id}")
-    public Map<String, Object> getClaim(@PathVariable String id) {
+    public Map<String, Object> getClaim(@PathVariable("id") String id) {
         return Map.of(
                 "claimId", id,
                 "status", "PENDING",
@@ -36,12 +36,32 @@ public class ClaimController {
     }
 
     @GetMapping("/slow")
-    public Map<String, Object> slowClaim(@RequestParam(defaultValue = "5000") long delayMs) throws InterruptedException {
+    public Map<String, Object> slowClaim(@RequestParam(name = "delayMs", defaultValue = "5000") long delayMs) throws InterruptedException {
         Thread.sleep(delayMs);
         return Map.of(
                 "message", "Slow claim response",
                 "delayMs", delayMs,
                 "timestamp", Instant.now().toString());
+    }
+
+    @GetMapping("/by-member/{memberId}")
+    public List<Map<String, Object>> getClaimsByMember(@PathVariable("memberId") String memberId) {
+        return List.of(
+                Map.of("claimId", "CLM-" + memberId + "-001", "memberId", memberId, "status", "APPROVED", "amount", 120.50),
+                Map.of("claimId", "CLM-" + memberId + "-002", "memberId", memberId, "status", "PENDING",  "amount", 75.00),
+                Map.of("claimId", "CLM-" + memberId + "-003", "memberId", memberId, "status", "PAID",     "amount", 340.00));
+    }
+
+    @GetMapping("/paid")
+    public List<Map<String, Object>> getPaidClaimsWithItems() {
+        // Intentionally returns item-level rows — one claim appears multiple times.
+        // Demonstrates join multiplication (Task 10 row-count mismatch scenario).
+        return List.of(
+                Map.of("claimId", "CLM-1001", "status", "PAID", "itemId", "ITEM-001", "serviceCode", "SVC-10"),
+                Map.of("claimId", "CLM-1001", "status", "PAID", "itemId", "ITEM-002", "serviceCode", "SVC-11"),
+                Map.of("claimId", "CLM-1001", "status", "PAID", "itemId", "ITEM-003", "serviceCode", "SVC-12"),
+                Map.of("claimId", "CLM-1002", "status", "PAID", "itemId", "ITEM-004", "serviceCode", "SVC-20"),
+                Map.of("claimId", "CLM-1002", "status", "PAID", "itemId", "ITEM-005", "serviceCode", "SVC-21"));
     }
 
     @PostMapping

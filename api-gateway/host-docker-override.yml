@@ -1,0 +1,94 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: host.docker.internal
+      port: 16379
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 3s
+      routes:
+        - id: claim-service
+          uri: http://host.docker.internal:18081
+          predicates:
+            - Path=/api/claims/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 1
+            - name: CircuitBreaker
+              args:
+                name: claimServiceCB
+                fallbackUri: forward:/fallback/claims
+        - id: member-service
+          uri: http://host.docker.internal:18082
+          predicates:
+            - Path=/api/members/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 1
+        - id: card-service
+          uri: http://host.docker.internal:18083
+          predicates:
+            - Path=/api/cards/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 1
+
+app:
+  jwt:
+    secret: "change-me-to-a-very-long-secret-key-at-least-32-bytes"
+    expiration-seconds: 3600
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      claimServiceCB:
+        register-health-indicator: true
+        sliding-window-size: 5
+        minimum-number-of-calls: 3
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 2
+  timelimiter:
+    instances:
+      claimServiceCB:
+        timeout-duration: 2s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,metrics,circuitbreakers,circuitbreakerevents
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: API Gateway Lab
+    description: Gateway with JWT, Redis rate limiting, and Resilience4j
+    version: 1.0.0

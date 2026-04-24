@@ -21,7 +21,7 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public Map<String, Object> getMember(@PathVariable String id) {
+    public Map<String, Object> getMember(@PathVariable("id") String id) {
         return Map.of(
                 "memberId", id,
                 "name", "Demo Member",

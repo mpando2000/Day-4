@@ -14,6 +14,7 @@ CLAUDE.md
 # OS
 .DS_Store
 Thumbs.db
+request.txt
 
 # Logs
 *.log

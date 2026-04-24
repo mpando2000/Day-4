@@ -21,7 +21,7 @@ public class CardController {
     }
 
     @GetMapping("/{id}")
-    public Map<String, Object> getCard(@PathVariable String id) {
+    public Map<String, Object> getCard(@PathVariable("id") String id) {
         return Map.of(
                 "cardId", id,
                 "type", "VISA",

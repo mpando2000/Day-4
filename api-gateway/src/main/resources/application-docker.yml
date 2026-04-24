@@ -1,0 +1,47 @@
+spring:
+  data:
+    redis:
+      host: redis
+  cloud:
+    gateway:
+      routes:
+        - id: claim-service
+          uri: http://claim-service:8081
+          predicates:
+            - Path=/api/claims/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 1
+            - name: CircuitBreaker
+              args:
+                name: claimServiceCB
+                fallbackUri: forward:/fallback/claims
+        - id: member-service
+          uri: http://member-service:8082
+          predicates:
+            - Path=/api/members/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 1
+        - id: card-service
+          uri: http://card-service:8083
+          predicates:
+            - Path=/api/cards/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 1
