@@ -1,0 +1,6 @@
+/home/daudi/Downloads/Documents/arafa/day4/api-gateway/src/main/java/com/example/gateway/ApiGatewayApplication.java
+/home/daudi/Downloads/Documents/arafa/day4/api-gateway/src/main/java/com/example/gateway/config/GatewayRateLimitConfig.java
+/home/daudi/Downloads/Documents/arafa/day4/api-gateway/src/main/java/com/example/gateway/config/SecurityConfig.java
+/home/daudi/Downloads/Documents/arafa/day4/api-gateway/src/main/java/com/example/gateway/controller/AuthController.java
+/home/daudi/Downloads/Documents/arafa/day4/api-gateway/src/main/java/com/example/gateway/controller/FallbackController.java
+/home/daudi/Downloads/Documents/arafa/day4/api-gateway/src/main/java/com/example/gateway/security/JwtService.java
